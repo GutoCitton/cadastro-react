@@ -16,12 +16,13 @@ function Formulario() {
       erros.segundoNome = 'Campo Obrigatório'
     }
 
-    const regexEmail = /^[a-z0-9.]+@[a-z0-9]+.[a-z]+.([a-z]+)?$/i;
+    const regexEmail = /[a-z0-9!#$%&'+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'+/=?^_`{|}~-]+)@(?:[a-z0-9](?:[a-z0-9-][a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/gi;
     if (!values.email) {
       erros.email = 'Campo Obrigatório'
-    } else if (!regexEmail.test(values.email)) {
-      
+    } 
+    else if (!regexEmail.test(values.email)) {
       erros.email ='Insira um email válido'
+      console.log(!regexEmail.test(values.email))
     }
     
     
