@@ -37,6 +37,7 @@ form {
   flex-direction: column;
   gap: 20px;  
   width: 700px;
+  background-color: white;
   border: 1px solid #808080;  
   padding: 0 0 20px 0;  
   border-radius: 8px;
@@ -143,6 +144,7 @@ button:hover {
   align-items: center;
   padding: 15px 15px;
   width: 100%;
+  background-color: white;
 }
 
 
