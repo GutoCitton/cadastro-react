@@ -1,10 +1,18 @@
 import { useFormik } from 'formik';
 import { useState } from 'react';
+import { MdDelete } from 'react-icons/md'
+import { BsPencilFill } from 'react-icons/bs'
+import './Formulario.modules.css'
 
 function Formulario() {
 
   const [cadastros, setCadastros] = useState ([]);
   const [idAtual, setIdAtual] = useState(1);
+  const [primeiroNome, setPrimeiroNome] = useState('');
+  const [segundoNome, setSegundoNome] = useState('');
+  const [email, setEmail] = useState('');
+  const [endereco, setEndereco] = useState('');
+  const [telefone, setTelefone] = useState('');
 
 
   const validacao = values => {
@@ -38,17 +46,21 @@ function Formulario() {
 
   const formik = useFormik ({
     initialValues: {
-      primeiroNome: '',
-      segundoNome: '',
-      email: '',
-      endereco: '',
-      telefone: ''
+      primeiroNome: primeiroNome,
+      segundoNome: segundoNome,
+      email: email,
+      endereco: endereco,
+      telefone: telefone
     },
     onSubmit: values => {
       let arrTemporario = [...cadastros];
       arrTemporario.push({id: idAtual, ...values});
       setIdAtual(idAtual + 1);
       setCadastros(arrTemporario);
+      let [arraydestruction] = arrTemporario
+      let arrayjson = JSON.stringify(arraydestruction)
+      console.log(arrayjson)
+      sessionStorage.setItem(`${idAtual}`, arrayjson)
       console.log(arrTemporario);
       formik.resetForm();
     },
@@ -62,62 +74,94 @@ function Formulario() {
     setCadastros(arrTemporario);
   }
 
+  function editarCadastro() {
+    let editar = sessionStorage.getItem('1')
+    let editarObjeto = JSON.parse(editar)
+    setPrimeiroNome(editarObjeto.primeiroNome)
+    setSegundoNome(editarObjeto.segundoNome)
+    setEmail(editarObjeto.email)
+    setEndereco(editarObjeto.endereco)
+    setTelefone(editarObjeto.telefone)
+    console.log(editarObjeto.primeiroNome)
+  }
+
 
   function printaCadastros() {
     return  (
       cadastros.map((cadastro, index) => {
         return (
-          <div key={cadastro.id}>
-            <p>Primeiro Nome: {cadastro.primeiroNome}</p>
-            <p>Segundo Nome: {cadastro.segundoNome}</p>
-            <p>Email: {cadastro.email}</p>
-            <p>endereco: {cadastro.endereco}</p>
-            <p>telefone: {cadastro.telefone}</p>
-            <button onClick={()=> excluirCadastro(index)}>Excluir</button>
-            {/* <button onClick={()=> excluirCadastro(index)}>Editar</button> */}
-            <br />
-            <br />
-          </div>
+          <>
+            <div key={cadastro.id} className='tbody'>
+                <div className='tr'>
+                    <div className='tb primeiro'>{cadastro.primeiroNome}</div>
+                    <div className='tb segundo'>{cadastro.segundoNome}</div>
+                    <div className='tb email'>{cadastro.email}</div>
+                    <div className='tb end'>{cadastro.endereco}</div>
+                    <div className='tb tel'>{cadastro.telefone}</div>
+                    
+                      <div className="btns-tabela">
+                        <button onClick={()=> excluirCadastro(index)} className="btn-tabela"><MdDelete /></button>
+                        <button onClick={()=> editarCadastro(index)} className="btn-tabela"><BsPencilFill /></button>
+                      </div>
+                </div>
+            </div>
+          </>
         )
       })
     )
   }
 
   return(
-    <div>
+    <div className="conteudo">
       <form onSubmit={formik.handleSubmit}>
-        <div>
-         <label htmlFor='primeiroNome'>Nome</label>
-         <input type="text" name='primeiroNome' id='primeiroNome' onChange={formik.handleChange} value={formik.values.primeiroNome} placeholder='Primeiro Nome' />
-         {formik.errors.primeiroNome ? <div>{formik.errors.primeiroNome}</div> : null}  
+        <div className="cadastro">
+          <p>Cadastro</p>
         </div>
-        <div>
-         <label htmlFor='segundoNome'>Sobrenome</label>
-         <input type="text" name='segundoNome' id='segundoNome' onChange={formik.handleChange} value={formik.values.segundoNome}  placeholder='Segundo Nome' />
-         {formik.errors.segundoNome ? <div>{formik.errors.segundoNome}</div> : null}  
+        <div className="container-input">
+        <label htmlFor='primeiroNome'>Nome*</label>
+        <input type="text" name='primeiroNome' id='primeiroNome' onChange={formik.handleChange} value={formik.values.primeiroNome} placeholder='Primeiro Nome' />
+        {formik.errors.primeiroNome ? <div className="error-color">{formik.errors.primeiroNome}</div> : null}  
         </div>
-        <div>
-         <label htmlFor='email'>Email</label>
-         <input type="email" name='email' id='email' onChange={formik.handleChange} value={formik.values.email} placeholder='Digite Seu Email' />
-         {formik.errors.email ? <div>{formik.errors.email}</div> : null}  
+        <div className="container-input">
+        <label htmlFor='segundoNome'>Sobrenome*</label>
+        <input type="text" name='segundoNome' id='segundoNome' onChange={formik.handleChange} value={formik.values.segundoNome}  placeholder='Segundo Nome' />
+        {formik.errors.segundoNome ? <div className="error-color">{formik.errors.segundoNome}</div> : null}  
         </div>
-        <div>
-         <label htmlFor='endereco'>Endereço</label>
-         <input type="text" name='endereco' id='endereco' onChange={formik.handleChange} value={formik.values.endereco} placeholder='Digite Seu Endereço' />
-         {formik.errors.endereco ? <div>{formik.errors.endereco}</div> : null}  
+        <div className="container-input">
+        <label htmlFor='email'>Email*</label>
+        <input type="email" name='email' id='email' onChange={formik.handleChange} value={formik.values.email} placeholder='Digite Seu Email' />
+        {formik.errors.email ? <div className="error-color">{formik.errors.email}</div> : null}  
         </div>
-        <div>
-         <label htmlFor='telefone'>Telefone</label>
-         <input type="text" name='telefone' id='telefone' onChange={formik.handleChange} value={formik.values.telefone} placeholder='Digite Seu Telefone' />
-         {formik.errors.telefone ? <div>{formik.errors.telefone}</div> : null}  
+        <div className="container-input">
+        <label htmlFor='endereco'>Endereço*</label>
+        <input type="text" name='endereco' id='endereco' onChange={formik.handleChange} value={formik.values.endereco} placeholder='Digite Seu Endereço' />
+        {formik.errors.endereco ? <div className="error-color">{formik.errors.endereco}</div> : null}  
         </div>
-        <div>
-          <button type='submit'>Salvar</button>
+        <div className="container-input">
+        <label htmlFor='telefone'>Telefone*</label>
+        <input type="text" name='telefone' id='telefone' onChange={formik.handleChange} value={formik.values.telefone} placeholder='Digite Seu Telefone' />
+        {formik.errors.telefone ? <div className="error-color">{formik.errors.telefone}</div> : null}  
+        </div>
+        <div className="buttons">
+          <button type='submit'>Cadastrar</button>
           <button onClick={formik.resetForm}>Limpar</button>
         </div>
       </form>
-      <div>
-        {printaCadastros()}
+      <div className="tabela">
+      <div className='table'>
+            <div className ="thead">
+                <div className = "th">
+                    <div className= 'td primeiro'>Primeiro Nome:</div>
+                    <div className= 'td segundo'>Segundo Nome:</div>
+                    <div className= 'td email'>E-mail:</div>
+                    <div className= 'td end'>Endereço:</div>
+                    <div className= 'td tel'>Telefone:</div>
+                    <div></div>
+                </div>
+            </div>
+            {printaCadastros()}
+        </div>
+        
       </div>
     </div>
   )
