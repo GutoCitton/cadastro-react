@@ -11,11 +11,16 @@ function Formulario() {
 
   const validacao = values => {
     const erros = {};
+    const regexNome = /^([a-zA-Zà-úÀ-Ú]|\s+)+$/;
     if (!values.primeiroNome) {
       erros.primeiroNome = 'Campo Obrigatório'
+    } else if (!regexNome.test(values.primeiroNome)) {
+      erros.primeiroNome = 'Por favor digite somente letras'
     }
     if (!values.segundoNome) {
       erros.segundoNome = 'Campo Obrigatório'
+    } else if (!regexNome.test(values.segundoNome)) {
+      erros.segundoNome = 'Por favor digite somente letras'
     }
 
     const regexEmail = /^[a-z0-9.]+@[a-z0-9]+.[a-z]+.([a-z]+)?$/i;
