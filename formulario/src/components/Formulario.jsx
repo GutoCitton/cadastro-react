@@ -8,12 +8,6 @@ function Formulario() {
 
   const [cadastros, setCadastros] = useState ([]);
   const [idAtual, setIdAtual] = useState(1);
-  const [primeiroNome, setPrimeiroNome] = useState('');
-  const [segundoNome, setSegundoNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [endereco, setEndereco] = useState('');
-  const [telefone, setTelefone] = useState('');
-
 
   const validacao = values => {
     const erros = {};
@@ -46,23 +40,43 @@ function Formulario() {
 
   const formik = useFormik ({
     initialValues: {
-      primeiroNome: primeiroNome,
-      segundoNome: segundoNome,
-      email: email,
-      endereco: endereco,
-      telefone: telefone
+      id: '',
+      primeiroNome: '',
+      segundoNome: '',
+      email: '',
+      endereco: '',
+      telefone: ''
+    },
+    initialErrors: {
+      primeiroNome: '',
+      segundoNome: '',
+      email: '',
+      endereco: '',
+      telefone: ''
     },
     onSubmit: values => {
-      let arrTemporario = [...cadastros];
-      arrTemporario.push({id: idAtual, ...values});
-      setIdAtual(idAtual + 1);
-      setCadastros(arrTemporario);
-      let [arraydestruction] = arrTemporario
-      let arrayjson = JSON.stringify(arraydestruction)
-      console.log(arrayjson)
-      sessionStorage.setItem(`${idAtual}`, arrayjson)
-      console.log(arrTemporario);
-      formik.resetForm();
+      
+      if(values.id) {
+
+        const users= cadastros.map(e => {
+          if(e.id === values.id) {
+            return values
+          } else {
+            return e
+          }
+        })
+
+        setCadastros(users);
+        formik.resetForm()
+      }else {
+
+        values.id = idAtual
+
+        setCadastros(cadastros.concat(values));
+        setIdAtual(idAtual + 1);
+        formik.resetForm()
+      }
+      
     },
     validate: validacao
   })
@@ -74,40 +88,57 @@ function Formulario() {
     setCadastros(arrTemporario);
   }
 
-  function editarCadastro() {
-    let editar = sessionStorage.getItem('1')
-    let editarObjeto = JSON.parse(editar)
-    setPrimeiroNome(editarObjeto.primeiroNome)
-    setSegundoNome(editarObjeto.segundoNome)
-    setEmail(editarObjeto.email)
-    setEndereco(editarObjeto.endereco)
-    setTelefone(editarObjeto.telefone)
-    console.log(editarObjeto.primeiroNome)
+  function editarCadastro(id) {
+    const user = cadastros.find(e => e.id === id)
+
+    formik.setFieldValue('id', id)
+    formik.setFieldValue('primeiroNome', user.primeiroNome)
+    formik.setFieldValue('segundoNome', user.segundoNome)
+    formik.setFieldValue('email', user.email)
+    formik.setFieldValue('endereco', user.endereco)
+    formik.setFieldValue('telefone', user.telefone)
+    formik.setFieldError(formik.initialErrors)
+
   }
 
 
   function printaCadastros() {
     return  (
-      cadastros.map((cadastro, index) => {
-        return (
-          <>
-            <div key={cadastro.id} className='tbody'>
-                <div className='tr'>
-                    <div className='tb primeiro'>{cadastro.primeiroNome}</div>
-                    <div className='tb segundo'>{cadastro.segundoNome}</div>
-                    <div className='tb email'>{cadastro.email}</div>
-                    <div className='tb end'>{cadastro.endereco}</div>
-                    <div className='tb tel'>{cadastro.telefone}</div>
-                    
-                      <div className="btns-tabela">
-                        <button onClick={()=> excluirCadastro(index)} className="btn-tabela"><MdDelete /></button>
-                        <button onClick={()=> editarCadastro(index)} className="btn-tabela"><BsPencilFill /></button>
-                      </div>
-                </div>
-            </div>
-          </>
-        )
-      })
+      <table className='table-form'>
+        <thead>
+          <tr>
+            {/* <th>ID</th> */}
+            <th>Primeiro Nome</th>
+            <th>Segundo Nome</th>
+            <th>E-mail</th>
+            <th>Endereço</th>
+            <th>Telefone</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            cadastros.map((e,i) => {
+              return (
+                <tr key={i}>
+                  {/* <td>{e.id}</td> */}
+                  <td>{e.primeiroNome}</td>
+                  <td>{e.segundoNome}</td>
+                  <td>{e.email}</td>
+                  <td>{e.endereco}</td>
+                  <td>{e.telefone}</td>
+                  <td>
+                    <div className="btns-tabela">
+                      <button onClick={()=> excluirCadastro(i)} className="btn-tabela"><MdDelete /></button>
+                      <button onClick={()=> editarCadastro(e.id)} className="btn-tabela"><BsPencilFill /></button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })
+          }
+        </tbody>
+      </table>
     )
   }
 
@@ -115,7 +146,7 @@ function Formulario() {
     <div className="conteudo">
       <form onSubmit={formik.handleSubmit}>
         <div className="cadastro">
-          <p>Cadastro</p>
+          <p>{formik.values.id !== '' ? 'Editar' : 'Cadastro'}</p>
         </div>
         <div className="container-input">
         <label htmlFor='primeiroNome'>Nome*</label>
@@ -143,25 +174,12 @@ function Formulario() {
         {formik.errors.telefone ? <div className="error-color">{formik.errors.telefone}</div> : null}  
         </div>
         <div className="buttons">
-          <button type='submit'>Cadastrar</button>
+          <button type='submit'>{formik.values.id !== '' ? 'Salvar' : 'Cadastrar'}</button>
           <button onClick={formik.resetForm}>Limpar</button>
         </div>
       </form>
       <div className="tabela">
-      <div className='table'>
-            <div className ="thead">
-                <div className = "th">
-                    <div className= 'td primeiro'>Primeiro Nome:</div>
-                    <div className= 'td segundo'>Segundo Nome:</div>
-                    <div className= 'td email'>E-mail:</div>
-                    <div className= 'td end'>Endereço:</div>
-                    <div className= 'td tel'>Telefone:</div>
-                    <div></div>
-                </div>
-            </div>
-            {printaCadastros()}
-        </div>
-        
+        {printaCadastros()} 
       </div>
     </div>
   )
