@@ -1,7 +1,9 @@
 import { useFormik } from 'formik';
 import { useState } from 'react';
 import './Formulario.modules.css'
-import List from './List';
+import PrintaCadastros from './PrintaCadastros';
+import { MdDelete } from 'react-icons/md'
+import { BsPencilFill } from 'react-icons/bs'
 
 function Formulario() {
 
@@ -102,10 +104,9 @@ function Formulario() {
     formik.setFieldValue('endereco', user.endereco)
     formik.setFieldValue('telefone', user.telefone)
     formik.setFieldError(formik.initialErrors)
-
   }
 
-  <List />
+  <PrintaCadastros />
 
   return(
     <div className="conteudo">
@@ -144,7 +145,7 @@ function Formulario() {
         </div>
       </form>
       <div className="tabela">
-        <List />
+      <PrintaCadastros cadastros={cadastros} excluirCadastro={excluirCadastro} editarCadastro={editarCadastro} MdDelete={MdDelete} BsPencilFill={BsPencilFill}/>
       </div>
     </div>
   )
